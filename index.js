@@ -36,6 +36,20 @@ app.get('/api/persons', (request, response) => {
   console.log(persons)
 })
 
+app.get('/info', (request, response) => {
+  const currentTime = new Date()
+  const personCount = persons.length
+  
+  const infoHtml = `
+    <div>
+      <p>Phonebook has info of ${personCount} People</p>
+      <p> ${currentTime}</p>
+    </div>
+  `
+  
+  response.send(infoHtml)
+})
+
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   const person = persons.find(person =>  person.id === id)
