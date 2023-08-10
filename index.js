@@ -1,5 +1,13 @@
 const express = require('express')
+const morgan = require('morgan') // Import the morgan package
 const app = express()
+
+// Define a custom token for morgan to log request body data
+morgan.token('postData', (req, res) => JSON.stringify(req.body))
+
+// Use morgan middleware for logging with the 'tiny' configuration
+// and the custom token for logging request body data
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postData'))
 
 app.use(express.json())
 
@@ -33,7 +41,6 @@ let persons = [
 
 app.get('/api/persons', (request, response) => {
   response.json(persons)
-  console.log(persons)
 })
 
 app.get('/info', (request, response) => {
@@ -53,7 +60,6 @@ app.get('/info', (request, response) => {
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   const person = persons.find(person =>  person.id === id)
-  console.log(person)
   if (person) {
     response.json(person)
   } else {
@@ -78,15 +84,15 @@ const generateId = () => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  if (!body.content) {
+  if (!body.name || !body.number) {
     return response.status(400).json({ 
-      error: 'content missing' 
+      error: 'Name or number missing' 
     })
-  }
+  }  
 
   const person = {
-    content: body.content,
-    important: body.important || false,
+    name: body.name,
+    number: body.number,
     id: generateId(),
   }
 
